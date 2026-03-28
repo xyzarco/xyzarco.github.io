@@ -5,100 +5,381 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #0B0E14;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000000;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             color: #e6edf3;
+            overflow: hidden;
         }
+
+
 
         .container {
             text-align: center;
-            background: #161b22;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 90%;
-            width: 400px;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
         }
 
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Circular countdown */
+        .countdown-ring {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .countdown-ring svg {
+            transform: rotate(-90deg);
+            width: 140px;
+            height: 140px;
+        }
+
+        .countdown-ring .bg-circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.06);
+            stroke-width: 4;
+        }
+
+        .countdown-ring .progress-circle {
+            fill: none;
+            stroke: #ffffff;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 408;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .countdown-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 700;
             color: #f0f6fc;
+            letter-spacing: -0.02em;
         }
 
-        p {
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
-            color: #8b949e;
+        .countdown-number.pulse {
+            animation: numberPulse 0.4s ease-out;
         }
 
-        #countdown {
-            font-weight: bold;
-            color: #007bff;
-            font-size: 1.4rem;
-        }
-
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #007bff;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem auto;
-        }
-
-        a {
-            color: #007bff;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        @keyframes spin {
+        @keyframes numberPulse {
             0% {
-                transform: rotate(0deg);
+                transform: translate(-50%, -50%) scale(1.3);
+                opacity: 0.6;
             }
 
             100% {
-                transform: rotate(360deg);
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
             }
+        }
+
+        h1 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #f0f6fc;
+            letter-spacing: -0.01em;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #6e7681;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .manual-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #6e7681;
+            text-decoration: none;
+            font-size: 0.8rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.2s ease;
+        }
+
+        .manual-link:hover {
+            color: #e6edf3;
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            text-decoration: none;
+        }
+
+        .manual-link svg {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.2s ease;
+        }
+
+        .manual-link:hover svg {
+            transform: translateX(2px);
+        }
+
+        /* Redirecting state */
+        .container.redirecting .countdown-number {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .container.redirecting .progress-circle {
+            animation: rotateGlow 1s linear infinite;
+        }
+
+        @keyframes rotateGlow {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Progress bar (bottom) */
+        .progress-bar-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.03);
+            z-index: 10;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #ffffff;
+            border-radius: 0 2px 2px 0;
+            transition: width 1s linear;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="loader"></div>
-        <h1>Redirecting</h1>
-        <p>Mengalihkan ke aplikasi dalam <span id="countdown">3</span> detik...</p>
-        <p><small>Jika tidak dialihkan otomatis, <a href="https://xyzarco.github.io/app">klik di sini</a>.</small></p>
+    <div class="container" id="mainContainer">
+        <div class="countdown-ring">
+            <svg viewBox="0 0 140 140">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#3b82f6" />
+                        <stop offset="100%" stop-color="#8b5cf6" />
+                    </linearGradient>
+                </defs>
+                <circle class="bg-circle" cx="70" cy="70" r="65" />
+                <circle class="progress-circle" id="progressCircle" cx="70" cy="70" r="65" />
+            </svg>
+            <div class="countdown-number" id="countdownNumber">3</div>
+        </div>
+
+        <h1 id="heading">Redirecting...</h1>
+        <p class="subtitle" id="subtitle">You will be redirected automatically</p>
+
+        <a href="https://guns.lol/xyzarco" class="manual-link" id="manualLink">
+            <span id="manualLinkText">Click here if not redirected</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+        </a>
+    </div>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
     </div>
 
     <script>
-        const targetUrl = "https://xyzarco.github.io/app";
-        let seconds = 3;
-        const countdownElement = document.getElementById('countdown');
+        const translations = {
+            en: {
+                title: 'Redirecting...',
+                heading: 'Redirecting...',
+                subtitle: 'You will be redirected automatically',
+                link: 'Click here if not redirected'
+            },
+            id: {
+                title: 'Mengalihkan...',
+                heading: 'Mengalihkan...',
+                subtitle: 'Kamu akan dialihkan secara otomatis',
+                link: 'Klik di sini jika tidak dialihkan'
+            },
+            ms: {
+                title: 'Mengalihkan...',
+                heading: 'Mengalihkan...',
+                subtitle: 'Anda akan dialihkan secara automatik',
+                link: 'Klik di sini jika tidak dialihkan'
+            },
+            ja: {
+                title: 'リダイレクト中...',
+                heading: 'リダイレクト中...',
+                subtitle: '自動的にリダイレクトされます',
+                link: 'リダイレクトされない場合はこちら'
+            },
+            ko: {
+                title: '리디렉션 중...',
+                heading: '리디렉션 중...',
+                subtitle: '자동으로 리디렉션됩니다',
+                link: '리디렉션되지 않으면 여기를 클릭하세요'
+            },
+            zh: {
+                title: '正在跳转...',
+                heading: '正在跳转...',
+                subtitle: '您将被自动重定向',
+                link: '如果没有跳转，请点击这里'
+            },
+            es: {
+                title: 'Redirigiendo...',
+                heading: 'Redirigiendo...',
+                subtitle: 'Serás redirigido automáticamente',
+                link: 'Haz clic aquí si no eres redirigido'
+            },
+            fr: {
+                title: 'Redirection...',
+                heading: 'Redirection...',
+                subtitle: 'Vous serez redirigé automatiquement',
+                link: 'Cliquez ici si vous n\'êtes pas redirigé'
+            },
+            de: {
+                title: 'Weiterleitung...',
+                heading: 'Weiterleitung...',
+                subtitle: 'Sie werden automatisch weitergeleitet',
+                link: 'Klicken Sie hier, falls nicht weitergeleitet'
+            },
+            pt: {
+                title: 'Redirecionando...',
+                heading: 'Redirecionando...',
+                subtitle: 'Você será redirecionado automaticamente',
+                link: 'Clique aqui se não for redirecionado'
+            },
+            ru: {
+                title: 'Перенаправление...',
+                heading: 'Перенаправление...',
+                subtitle: 'Вы будете перенаправлены автоматически',
+                link: 'Нажмите здесь, если не перенаправлены'
+            },
+            ar: {
+                title: 'جاري التحويل...',
+                heading: 'جاري التحويل...',
+                subtitle: 'سيتم تحويلك تلقائيًا',
+                link: 'انقر هنا إذا لم يتم التحويل'
+            },
+            th: {
+                title: 'กำลังเปลี่ยนเส้นทาง...',
+                heading: 'กำลังเปลี่ยนเส้นทาง...',
+                subtitle: 'คุณจะถูกเปลี่ยนเส้นทางโดยอัตโนมัติ',
+                link: 'คลิกที่นี่หากไม่ถูกเปลี่ยนเส้นทาง'
+            },
+            vi: {
+                title: 'Đang chuyển hướng...',
+                heading: 'Đang chuyển hướng...',
+                subtitle: 'Bạn sẽ được chuyển hướng tự động',
+                link: 'Nhấn vào đây nếu không được chuyển hướng'
+            }
+        };
+
+        function detectLang() {
+            const lang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+            const base = lang.split('-')[0];
+            return translations[base] ? base : 'en';
+        }
+
+        function applyTranslations() {
+            const lang = detectLang();
+            const t = translations[lang];
+            document.title = t.title;
+            document.documentElement.lang = lang;
+            document.getElementById('heading').textContent = t.heading;
+            document.getElementById('subtitle').textContent = t.subtitle;
+            document.getElementById('manualLinkText').textContent = t.link;
+        }
+
+        applyTranslations();
+
+        const targetUrl = "https://guns.lol/xyzarco";
+        const totalSeconds = 3;
+        let seconds = totalSeconds;
+
+        const countdownNumber = document.getElementById('countdownNumber');
+        const progressCircle = document.getElementById('progressCircle');
+        const progressBar = document.getElementById('progressBar');
+        const container = document.getElementById('mainContainer');
+
+        const circumference = 2 * Math.PI * 65;
+        progressCircle.style.strokeDasharray = circumference;
+        progressCircle.style.strokeDashoffset = 0;
+
+        function updateProgress() {
+
+            const fraction = seconds / totalSeconds;
+            const offset = circumference * (1 - fraction);
+            progressCircle.style.strokeDashoffset = offset;
+
+            const barPercent = ((totalSeconds - seconds) / totalSeconds) * 100;
+            progressBar.style.width = barPercent + '%';
+        }
+
+
+        updateProgress();
 
         const interval = setInterval(() => {
             seconds--;
-            countdownElement.textContent = seconds;
 
             if (seconds <= 0) {
                 clearInterval(interval);
-                window.location.href = targetUrl;
+                countdownNumber.textContent = '✓';
+                countdownNumber.classList.add('pulse');
+                progressBar.style.width = '100%';
+                progressCircle.style.strokeDashoffset = circumference;
+                container.classList.add('redirecting');
+
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 300);
+            } else {
+                countdownNumber.textContent = seconds;
+                countdownNumber.classList.remove('pulse');
+                void countdownNumber.offsetWidth;
+                countdownNumber.classList.add('pulse');
+                updateProgress();
             }
         }, 1000);
     </script>
